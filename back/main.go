@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -178,6 +179,8 @@ func PopularCorGrid(cor string) {
 		Grid.UltimoAlterado = 0
 	}
 
+	cor = strings.Trim(cor, "\"")
+
 	Grid.GridCores[Grid.UltimoAlterado] = cor
 	Grid.UltimoAlterado++
 }
@@ -348,7 +351,11 @@ func EnviaMensagemWsClienteGrid() {
 			if c.WsConn != nil {
 				c.Lock()
 				defer c.Unlock()
-				if err := c.WsConn.WriteJSON(Grid.GridCores); err != nil {
+				wsRetorno := entities.WsRetorno{
+					GridCores:    Grid.GridCores,
+					ProximoPixel: Grid.UltimoAlterado + 1,
+				}
+				if err := c.WsConn.WriteJSON(wsRetorno); err != nil {
 					log.Printf("Erro ao enviar mensagem para usuário: Error - %s", err.Error())
 					RemoveCliente(c.Id)
 				}

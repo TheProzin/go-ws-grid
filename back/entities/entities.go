@@ -56,3 +56,8 @@ type WsGrid struct {
 	GridCores      map[int]string `json:"grid_cores"`
 	sync.Mutex
 }
+
+type WsRetorno struct {
+	ProximoPixel int            `json:"proximo_pixel"`
+	GridCores    map[int]string `json:"grid_cores"`
+}
