@@ -1,0 +1,13 @@
+.pixel-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.pixel {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #ccc;
+}

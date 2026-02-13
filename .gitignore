@@ -1,0 +1,5 @@
+/.vscode
+/back/__debug**
+/back/go.mod
+/back/go.sum
+/back/.env

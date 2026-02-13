@@ -1,0 +1,2 @@
+Para praticar os conhecimentos em Go e WebSocket realizei um grid de cores, dos quais ao que o usuário alterar, reflete no grid de todos os usuários conectados
+Utilizei de Go, jQuery, HTML, CSS, Bootstrap
