@@ -15,7 +15,7 @@ const criarWsUsuario = function () {
 
 const getTokenWs = function () {
     $.ajax({
-        url: "http:grid-api.agendemais.com.br/getTokenWsGrid",
+        url: "http://localhost:9000/getTokenWsGrid",
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -54,7 +54,7 @@ const wsGrid = function (retorno) {
     }
 
     const token = retorno.token;
-    const urlWS = `ws://grid-api.agendemais.com.br/wsGrid?otp=` + token;
+    const urlWS = `ws://localhost:9000/wsGrid?otp=` + token;
 
     const socket = new WebSocket(urlWS);
 
