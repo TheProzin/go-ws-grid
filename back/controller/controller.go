@@ -2,8 +2,8 @@ package controller
 
 import (
 	"encoding/json"
-	"go-ping-pong/entities"
-	"go-ping-pong/model"
+	"go-ws-grid/entities"
+	"go-ws-grid/model"
 	"log"
 	"net/http"
 

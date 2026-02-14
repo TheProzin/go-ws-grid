@@ -3,3 +3,5 @@
 /back/go.mod
 /back/go.sum
 /back/.env
+go.mod
+go.sum

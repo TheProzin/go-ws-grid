@@ -1,7 +1,7 @@
 package model
 
 import (
-	"go-ping-pong/entities"
+	"go-ws-grid/entities"
 	"log"
 	"net/http"
 	"os"

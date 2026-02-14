@@ -2,8 +2,8 @@ package main
 
 import (
 	"crypto/tls"
-	"go-ping-pong/controller"
-	"go-ping-pong/model"
+	"go-ws-grid/controller"
+	"go-ws-grid/model"
 	"log"
 	"net/http"
 	"os"
@@ -14,7 +14,7 @@ import (
 
 func main() {
 	log.SetOutput(os.Stdout)
-	log.SetPrefix("go-ping-pong: ")
+	log.SetPrefix("go-ws-grid: ")
 	log.SetFlags(log.Ldate | log.Ltime)
 	var err error
 
