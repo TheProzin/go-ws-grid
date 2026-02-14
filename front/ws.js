@@ -1,4 +1,4 @@
-let wsNotificacaoAtual = null;
+let wsGridAtual = null;
 
 const criarWsUsuario = function () {
     $("#p_aviso").val("");
@@ -14,7 +14,7 @@ const criarWsUsuario = function () {
 
 const getTokenWs = function () {
     $.ajax({
-        url: "http://localhost:9000/getTokenWsNotificacao",
+        url: "http://localhost:9000/getTokenWsGrid",
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -24,7 +24,7 @@ const getTokenWs = function () {
         }),
         success: function (retorno) {
             fecharConexaoWs();
-            wsNotificacao(retorno);
+            wsGrid(retorno);
         },
         error: function (xhr, status, error) {
             console.error("ERRO DETALHADO:", {
@@ -39,28 +39,28 @@ const getTokenWs = function () {
 }
 
 const fecharConexaoWs = function () {
-    if (wsNotificacaoAtual && wsNotificacaoAtual.readyState === WebSocket.OPEN) {
-        wsNotificacaoAtual.close();
-        wsNotificacaoAtual = null;
+    if (wsGridAtual && wsGridAtual.readyState === WebSocket.OPEN) {
+        wsGridAtual.close();
+        wsGridAtual = null;
         console.log("Conexão WebSocket anterior fechada");
     }
 }
 
-const wsNotificacao = function (retorno) {
+const wsGrid = function (retorno) {
     if (!retorno || !retorno.token) {
         console.error("Token não recebido");
         return;
     }
 
     const token = retorno.token;
-    const urlWS = `ws://localhost:9000/wsNotificacao?otp=` + token;
+    const urlWS = `ws://localhost:9000/wsGrid?otp=` + token;
 
     // Cria nova conexão
     const socket = new WebSocket(urlWS);
 
     socket.onopen = function () {
         console.log("WebSocket conectado com sucesso!");
-        wsNotificacaoAtual = socket;
+        wsGridAtual = socket;
 
         $("#div_cadastro_usuario").hide();
         iniciaGrid();
@@ -86,24 +86,24 @@ const wsNotificacao = function (retorno) {
 
     socket.onclose = function (event) {
         console.log("WebSocket fechado:", event.code, event.reason);
-        if (wsNotificacaoAtual === socket) {
-            wsNotificacaoAtual = null;
+        if (wsGridAtual === socket) {
+            wsGridAtual = null;
         }
     };
 }
 
 const enviarCor = function () {
 
-    if (!wsNotificacaoAtual) {
+    if (!wsGridAtual) {
         console.error("Nenhuma conexão WebSocket ativa.");
         return;
     }
 
-    if (wsNotificacaoAtual.readyState === WebSocket.OPEN) {
+    if (wsGridAtual.readyState === WebSocket.OPEN) {
         const cor = $("#cor").val();
-        wsNotificacaoAtual.send(JSON.stringify(cor));
+        wsGridAtual.send(JSON.stringify(cor));
     } else {
-        console.error("WebSocket não está aberto. Estado:", wsNotificacaoAtual.readyState);
+        console.error("WebSocket não está aberto. Estado:", wsGridAtual.readyState);
     }
 };
 
