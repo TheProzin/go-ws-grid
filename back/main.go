@@ -10,20 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
-
-func GoDotEnvVariable(key string) string {
-
-	// load .env file
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-	return os.Getenv(key)
-}
 
 func main() {
 	log.SetOutput(os.Stdout)
@@ -39,7 +26,7 @@ func main() {
 	r.HandleFunc("/wsGrid", controller.WsEndpointHandler)
 	r.HandleFunc("/getTokenWsGrid", controller.GetTokenWsHandler)
 
-	port := ":" + GoDotEnvVariable("SERVER_PORT")
+	port := ":" + model.GoDotEnvVariable("SERVER_PORT")
 	srv := &http.Server{
 		Addr:         port,
 		WriteTimeout: 15 * time.Second,

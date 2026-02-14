@@ -4,13 +4,18 @@ import (
 	"go-ping-pong/entities"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/joho/godotenv"
 )
+
+var QtdPixels = GetQtdPixels()
 
 var WebsocketUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -23,18 +28,44 @@ var WsClientesGrid = entities.ClientManager{
 }
 
 var Grid = entities.WsGrid{
-	GridCores: make(map[int]string, 25),
+	GridCores: make(map[int]string, QtdPixels),
 }
 
 var OtpManager = entities.OtpManager{
 	OtpMap: make(entities.OtpMap),
 }
 
+func GetQtdPixels() int {
+	value := GoDotEnvVariable("QTD_PIXELS")
+	if value == "" {
+		return 0 // ou outro valor padrão
+	}
+
+	pixels, err := strconv.Atoi(value)
+	if err != nil {
+		log.Printf("Erro ao converter QTD_PIXELS='%s', usando valor padrão 0", value)
+		return 0
+	}
+	return pixels
+}
+
+func GoDotEnvVariable(key string) string {
+
+	// load .env file
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	return os.Getenv(key)
+}
+
 func PopularCorGrid(cor string) {
 	Grid.Lock()
 	defer Grid.Unlock()
 
-	if Grid.UltimoAlterado == 25 {
+	if Grid.UltimoAlterado == QtdPixels {
 		Grid.UltimoAlterado = 0
 	}
 
@@ -90,7 +121,7 @@ func EnviaMensagemWsClienteGrid() {
 				c.Lock()
 				defer c.Unlock()
 				proximoPixel := Grid.UltimoAlterado
-				if Grid.UltimoAlterado == 25 {
+				if Grid.UltimoAlterado == QtdPixels {
 					proximoPixel = 0
 				}
 				wsRetorno := entities.WsRetorno{

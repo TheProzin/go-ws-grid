@@ -1,4 +1,5 @@
-let wsGridAtual = null;
+let WS_GRID_ATUAL = null;
+const QTD_PIXELS = 25;
 
 const criarWsUsuario = function () {
     $("#p_aviso").val("");
@@ -39,9 +40,9 @@ const getTokenWs = function () {
 }
 
 const fecharConexaoWs = function () {
-    if (wsGridAtual && wsGridAtual.readyState === WebSocket.OPEN) {
-        wsGridAtual.close();
-        wsGridAtual = null;
+    if (WS_GRID_ATUAL && WS_GRID_ATUAL.readyState === WebSocket.OPEN) {
+        WS_GRID_ATUAL.close();
+        WS_GRID_ATUAL = null;
         console.log("Conexão WebSocket anterior fechada");
     }
 }
@@ -55,12 +56,11 @@ const wsGrid = function (retorno) {
     const token = retorno.token;
     const urlWS = `ws://localhost:9000/wsGrid?otp=` + token;
 
-    // Cria nova conexão
     const socket = new WebSocket(urlWS);
 
     socket.onopen = function () {
         console.log("WebSocket conectado com sucesso!");
-        wsGridAtual = socket;
+        WS_GRID_ATUAL = socket;
 
         $("#div_cadastro_usuario").hide();
         iniciaGrid();
@@ -86,32 +86,42 @@ const wsGrid = function (retorno) {
 
     socket.onclose = function (event) {
         console.log("WebSocket fechado:", event.code, event.reason);
-        if (wsGridAtual === socket) {
-            wsGridAtual = null;
+        if (WS_GRID_ATUAL === socket) {
+            WS_GRID_ATUAL = null;
         }
     };
 }
 
 const enviarCor = function () {
 
-    if (!wsGridAtual) {
+    if (!WS_GRID_ATUAL) {
         console.error("Nenhuma conexão WebSocket ativa.");
         return;
     }
 
-    if (wsGridAtual.readyState === WebSocket.OPEN) {
+    if (WS_GRID_ATUAL.readyState === WebSocket.OPEN) {
         const cor = $("#cor").val();
-        wsGridAtual.send(JSON.stringify(cor));
+        WS_GRID_ATUAL.send(JSON.stringify(cor));
     } else {
-        console.error("WebSocket não está aberto. Estado:", wsGridAtual.readyState);
+        console.error("WebSocket não está aberto. Estado:", WS_GRID_ATUAL.readyState);
     }
 };
 
 const iniciaGrid = function () {
     const grid = $("#pixel_grid");
     grid.empty();
+    
+    const { colunas, linhas } = encontrarMelhorGrid(QTD_PIXELS);
+    
+    grid.css({
+        display: 'grid',
+        gridTemplateColumns: `repeat(${colunas}, 1fr)`,
+        gap: '4px',
+        width: 'fit-content',
+        margin: '0 auto'
+    });
 
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < QTD_PIXELS; i++) {
         const numero_exibicao = i + 1;
         const pixel = $("<div>")
             .addClass("pixel")
@@ -122,11 +132,34 @@ const iniciaGrid = function () {
                 height: "50px",
                 backgroundColor: "aqua",
                 color: "#ccc",
-                border: "1px solid #ccc"
+                border: "1px solid #ccc",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
             });
 
         grid.append(pixel);
     }
+}
+
+const encontrarMelhorGrid = function (total) {
+    let melhorColunas = total;
+    let melhorDiferenca = Infinity;
+    
+    for (let colunas = 1; colunas <= Math.sqrt(total) * 2; colunas++) {
+        const linhas = Math.ceil(total / colunas);
+        const diferenca = Math.abs(colunas - linhas);
+        
+        if (diferenca < melhorDiferenca) {
+            melhorDiferenca = diferenca;
+            melhorColunas = colunas;
+        }
+    }
+    
+    return {
+        colunas: melhorColunas,
+        linhas: Math.ceil(total / melhorColunas)
+    };
 }
 
 const montarGrid = function (json_grid) {
@@ -136,16 +169,12 @@ const montarGrid = function (json_grid) {
     
     const grid = Object.keys(objeto.grid_cores).map(indice => ({
         indice: parseInt(indice),
-        valor: objeto.grid_cores[indice]  // Corrigido: acessando grid_cores[indice] em vez de objeto[indice]
+        valor: objeto.grid_cores[indice]
     }))
 
-    // Para cada item, atualiza o pixel correspondente
     grid.forEach(item => {
-        // Encontra o pixel pelo índice
         const pixel = $(`#pixel_grid div[data-indice="${item.indice}"]`);
-
         if (pixel.length) {
-            // Muda a cor de fundo baseada no valor
             pixel.css("backgroundColor", item.valor);
         }
     });
