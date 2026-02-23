@@ -1,7 +1,7 @@
 /.vscode
 /back/__debug**
 # /back/go.mod
-/back/go.sum
+# /back/go.sum
 /back/.env
 # go.mod
-go.sum
+# go.sum
