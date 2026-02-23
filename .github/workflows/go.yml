@@ -22,7 +22,9 @@ jobs:
         go-version: '1.26'
 
     - name: Build
-      run: go build -v ./back/...
+      run: |
+        cd back
+        go build -v ./...
 
     #- name: Test
       #run: go test -v ./back/...
